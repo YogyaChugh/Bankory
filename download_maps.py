@@ -23,9 +23,7 @@ async def download_map(map_name):
 
     try:
         # Downloads the whole folder of the map in temp folder
-        print("Downloading.......")
         download(map_root + "/maps/" + map_name, temp)
-        print("Downloaded all files !")
     except Exception:
         raise GameFunctioningException(
             f"""
@@ -37,11 +35,7 @@ async def download_map(map_name):
     with open(map_json_path) as file:
         data = json.load(file)
 
-    print(data)
-
     for key, value in data.items():
-        print(value)
-        print(type(value))
         if isinstance(value, dict):
             if value.get("permanent"):
                 save_folder = value.get("save_folder", ".")

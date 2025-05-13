@@ -143,11 +143,9 @@ def build(file_name, map_name):
                         {temp}/{map_name}/
                         {res_file} is empty !"""
                     )
-                print(module2)
                 data_3 = module2.data
 
         # This is for building all cards in the resource file
-        print(f"DATA 3 :- {data_3}")
         if data_3:
             for card, card_value in data_3.items():
                 if card_value.get("type") in value.get("types"):
@@ -182,15 +180,11 @@ def build(file_name, map_name):
             for k in value.get("types"):
                 for j in range(value.get("num")):
                     try:
-                        folder = f"""{permanent}/
-                            {data_2.get(k).get("assets")}"""
+                        folder = f"{permanent}/{data_2.get(k).get("assets")}"
                         os.makedirs(folder, exist_ok=True)
-                        create_asset(structure).save(
-                            f"""{permanent}/
-                            {data_2.get(k).get("assets")}/{k}_{j}.png"""
-                        )
-                    except Exception as e:
-                        raise GameFunctioningException(
-                            f"""Asset Creation
-                            Failed ! Error log: {e.message}"""
-                        )
+                        a = data_2.get(k).get("assets")
+                        b = create_asset(structure)
+                        b.save(f"{permanent}/{a}/{k}_{j}.png")
+                    except Exception:
+                        msg = "Asset Creation Failed !"
+                        raise GameFunctioningException(msg)

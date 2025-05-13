@@ -284,7 +284,8 @@ def create_asset(structure):
         elif i.get("type") == "bitmap":
             text_img_drawn.bitmap(*reqs)
         elif i.get("type") == "image":
-            small_img = Image.open(i.get("location"))
+            temploc = os.environ.get("FLET_APP_STORAGE_TEMP")
+            small_img = Image.open(temploc + "/" + i.get("location"))
 
             # New image altering
             if i.get("rotate"):

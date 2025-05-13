@@ -12,7 +12,7 @@ data = {
         "structure": {
             "main": {
                 "type": "color",
-                "color": (230, 220, 200, 0),
+                "color": (230, 220, 200),
                 "dimensions": (250, 400),
                 "border_width": 4,
                 "border_color": (90, 60, 40),
@@ -81,7 +81,7 @@ data = {
                 },
                 {
                     "type": "image",
-                    "location": "Bankory/maps/map_01/assets/rail.png",
+                    "location": "map_01/assets/rail.png",
                     "position": (3, 150),
                     "scale": ((255, 164), Image.Resampling.LANCZOS)
                 },
@@ -126,7 +126,7 @@ data = {
                 },
                 {
                     "type": "image",
-                    "location": "Bankory/maps/map_01/assets/water_tap.png",
+                    "location": "map_01/assets/water_tap.png",
                     "position": ('center', 130),
                     "scale": ((255, 164), Image.Resampling.LANCZOS)
                 },
@@ -171,7 +171,7 @@ data = {
                 },
                 {
                     "type": "image",
-                    "location": "Bankory/maps/map_01/assets/bulb.png",
+                    "location": "map_01/assets/bulb.png",
                     "position": ('center', 150),
                     "scale": ((139, 157), Image.Resampling.LANCZOS)
                 },
@@ -207,7 +207,7 @@ data = {
             "others": [
                 {
                     "type": "image",
-                    "location": "Bankory/maps/map_01/assets/bus.png",
+                    "location": "map_01/assets/bus.png",
                     "position": ('center', 'center'),
                     "scale": ((314, 292), Image.Resampling.LANCZOS),
                     "rotate": 45
@@ -261,7 +261,7 @@ data = {
                 },
                 {
                     "type": "image",
-                    "location": "Bankory/maps/map_01/assets/question_mark.png",
+                    "location": "map_01/assets/question_mark.png",
                     "position": ('center', 150),
                     "scale": ((125, 165), Image.Resampling.LANCZOS)
                 }
@@ -296,7 +296,7 @@ data = {
                 },
                 {
                     "type": "image",
-                    "location": "Bankory/maps/map_01/assets/chest.png",
+                    "location": "map_01/assets/chest.png",
                     "position": ('center', 180),
                     "scale": ((154, 135), Image.Resampling.LANCZOS)
                 }
@@ -322,7 +322,7 @@ data = {
             "others": [
                 {
                     "type": "image",
-                    "location": "Bankory/maps/map_01/assets/man_in_jail.png",
+                    "location": "map_01/assets/man_in_jail.png",
                     "position": ('center', 'center'),
                     "scale": ((314, 292), Image.Resampling.LANCZOS),
                     "rotate": 45
@@ -367,7 +367,7 @@ data = {
             "others": [
                 {
                     "type": "image",
-                    "location": "Bankory/maps/map_01/assets/police.png",
+                    "location": "map_01/assets/police.png",
                     "position": ('center', 'center'),
                     "scale": ((314, 292), Image.Resampling.LANCZOS),
                     "rotate": 45
@@ -421,7 +421,7 @@ data = {
                 },
                 {
                     "type": "image",
-                    "location": "Bankory/maps/map_01/assets/money_bag.png",
+                    "location": "map_01/assets/money_bag.png",
                     "position": ('center', 143),
                     "scale": ((175, 200), Image.Resampling.LANCZOS)
                 }

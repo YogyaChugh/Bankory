@@ -70,8 +70,6 @@ def download_file(service, file_id, filename, destination):
     done = False
     while not done:
         status, done = downloader.next_chunk()
-        if status:
-            print(f"  Downloaded {int(status.progress() * 100)}%.")
 
 
 def download_folder(service, folder_id, destination):
