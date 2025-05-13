@@ -1,7 +1,0 @@
-{
-    "cards": {
-        "types": ["PROPERTY","STATION","WATER WORKS","ELECTRIC COMPANY","BUST STOP","CHANCE","COMMUNITY","JAIL VISIT","JAIL","INCOME TAX"],
-        "entity_file": "entities/card_types.py",
-        "res_file": "resources/cards.py"
-    }
-}
