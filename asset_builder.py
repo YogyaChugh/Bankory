@@ -1,7 +1,8 @@
 import copy
-import importlib
+import importlib.util
 import json
 import os
+import sys
 
 from PIL import ImageFont
 
@@ -29,8 +30,8 @@ def build(file_name, map_name):
     """
 
     # These are provided by flet library for use when packaged !
-    temp = os.environ.get("TEMPORARY_STORAGE_LOCATION")
-    permanent = os.environ.get("PERMANENT_STORAGE_LOCATION")
+    temp = os.environ.get("FLET_APP_STORAGE_TEMP")
+    permanent = os.environ.get("FLET_APP_STORAGE_DATA")
 
     if not temp or not permanent:
         raise GameFunctioningException(
@@ -56,7 +57,7 @@ def build(file_name, map_name):
     data_2 = {}
     data_3 = {}
 
-    for i in data:
+    for key, value in data.items():
         # Loops through the configuration dictionary
         # content for building each
         # Json can be loaded using json.load but python
@@ -64,10 +65,11 @@ def build(file_name, map_name):
 
         # Entity file is the one containing structure, type,
         # and other important type related info
-        entity_file = data.get(i).get("entity_file")
+        entity_file = value.get("entity_file")
         if ".json" in entity_file:
             try:
-                with open(temp + "/" + map_name + "/" + entity_file) as file:
+                loc = temp + "/" + map_name + "/"
+                with open(loc + entity_file[:-5]) as file:
                     data_2 = json.load(file)
                     # Contains the data of all types
             except Exception:
@@ -83,10 +85,14 @@ def build(file_name, map_name):
                 is empty !"""
                 )
         elif ".py" in entity_file:
+
+            fp = temp + "/" + map_name + "/" + entity_file
+            ef = entity_file[:-2]
+            spec = importlib.util.spec_from_file_location(ef, fp)
             try:
-                module1 = importlib.import_module(
-                    temp + "." + map_name + "." + entity_file
-                )
+                module1 = importlib.util.module_from_spec(spec)
+                sys.modules[entity_file] = module1
+                spec.loader.exec_module(module1)
             except Exception:
                 raise GameFunctioningException(
                     f"""No file found at
@@ -101,26 +107,31 @@ def build(file_name, map_name):
             data_2 = module1.data
             # Every python data file has got a data variable
 
-        if data.get(i).get("res_file"):
+        if value.get("res_file"):
             # Res or say Resource file contains the cards to be registered
             # If res file isn't present, this means that the cards are all
             # common and can be registered using the num var in
             # configuration file
-            res_file = data.get(i).get("res_file")
+            res_file = value.get("res_file")
             if ".json" in res_file:
                 try:
-                    with open(temp + "/" + map_name + "/" + res_file) as file:
+                    loc = temp + "/" + map_name + "/"
+                    with open(loc + res_file[:-5]) as file:
                         data_3 = json.load(file)
                 except Exception:
                     raise GameFunctioningException(
                         f"""No file found at
                         {temp}/{map_name}/{res_file}"""
                     )
-            elif ".py" in data.get(i).get("res_file"):
+            elif ".py" in value.get("res_file"):
+
+                fp = temp + "/" + map_name + "/" + res_file
+                rf = res_file[:-2]
+                spec = importlib.util.spec_from_file_location(rf, fp)
                 try:
-                    module2 = importlib.import_module(
-                        temp + "." + map_name + "." + res_file
-                    )
+                    module2 = importlib.util.module_from_spec(spec)
+                    sys.modules[res_file] = module2
+                    spec.loader.exec_module(module2)
                 except Exception:
                     raise GameFunctioningException(
                         f"""No file found at
@@ -132,45 +143,48 @@ def build(file_name, map_name):
                         {temp}/{map_name}/
                         {res_file} is empty !"""
                     )
+                print(module2)
                 data_3 = module2.data
 
         # This is for building all cards in the resource file
+        print(f"DATA 3 :- {data_3}")
         if data_3:
-            for j in data_3:
-                if data_3.get(j).get("type") in data.get(i).get("types"):
+            for card, card_value in data_3.items():
+                if card_value.get("type") in value.get("types"):
                     structure = copy.deepcopy(
-                        data_2.get(data_3.get(j).get("type")).get("structure")
+                        data_2.get(card_value.get("type")).get("structure")
                     )
                     if not structure:
                         raise GameFunctioningException(
                             f"""Structure details
-                        empty for asset {j} of type {data_3.get(j).get('type')}
+                        empty for asset {card} of type {card_value.get('type')}
                         in file temp/
-                        {map_name}/{data.get(i).get('entity_file')}
+                        {map_name}/{value.get('entity_file')}
                         """
                         )
-                    a_temp = structure["others"]
-                    a_temp = a_temp[structure.get("others").index(i)]
+                    a_temp_struc = structure["others"]
                     for i in structure.get("others"):
+                        a_temp = a_temp_struc[structure.get("others").index(i)]
                         if type(i.get("reqs")) == str:
                             a_temp["reqs"] = eval(i.get("reqs"))
                     try:
+                        anothtemp = data_2.get(card_value.get("type"))
+                        folder = str(f"{permanent}/{anothtemp.get("assets")}")
+                        os.makedirs(folder, exist_ok=True)
                         create_asset(structure).save(
-                            f"""{permanent}/
-                        {data_2.get(data_3.get(j).get('type')).get("assets")}
-                        /{j}.png"""
+                            f"{permanent}/{anothtemp.get('assets')}/{card}.png"
                         )
-                    except Exception as e:
-                        raise GameFunctioningException(
-                            f"""Asset
-                            Creation Failed ! Error log: {e.message}"""
-                        )
+                    except Exception:
+                        raise GameFunctioningException("Asset Creation Fail !")
 
         # This is for building same cards acc to the num var in the config file
         else:
-            for k in data.get(i).get("types"):
-                for j in range(data.get(i).get("num")):
+            for k in value.get("types"):
+                for j in range(value.get("num")):
                     try:
+                        folder = f"""{permanent}/
+                            {data_2.get(k).get("assets")}"""
+                        os.makedirs(folder, exist_ok=True)
                         create_asset(structure).save(
                             f"""{permanent}/
                             {data_2.get(k).get("assets")}/{k}_{j}.png"""

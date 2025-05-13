@@ -6,12 +6,12 @@ from download_files import download
 from exceptions import GameFunctioningException
 
 
-def download_map(map_name):
+async def download_map(map_name):
     # Handles everything from downloading
     # all files of a map in temp folder of flet,
     # saving permanent files and building the assets
-    temp = os.environ.get("TEMPORARY_STORAGE_LOCATION")
-    permanent = os.environ.get("PERMANENT_STORAGE_LOCATION")
+    temp = os.environ.get("FLET_APP_STORAGE_TEMP")
+    permanent = os.environ.get("FLET_APP_STORAGE_DATA")
 
     map_root = os.environ.get("DRIVE_MAP_ROOT_LINK")
     if not map_root:
@@ -23,19 +23,25 @@ def download_map(map_name):
 
     try:
         # Downloads the whole folder of the map in temp folder
-        download(map_root + map_name, temp)
+        print("Downloading.......")
+        download(map_root + "/maps/" + map_name, temp)
+        print("Downloaded all files !")
     except Exception:
         raise GameFunctioningException(
             f"""
-            Root download for map {map_name} failed
-        """
+            Root download for map {map_name} failed !
+            """
         )
 
     map_json_path = os.path.join(temp, map_name, f"{map_name}.json")
     with open(map_json_path) as file:
         data = json.load(file)
 
+    print(data)
+
     for key, value in data.items():
+        print(value)
+        print(type(value))
         if isinstance(value, dict):
             if value.get("permanent"):
                 save_folder = value.get("save_folder", ".")
@@ -106,6 +112,4 @@ def download_map(map_name):
             Unintended file configuration found in {map_json_path}
         """
         )
-
-
-download_map("map_01")
+    return

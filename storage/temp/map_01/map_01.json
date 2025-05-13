@@ -1,0 +1,40 @@
+{
+    "root": "maps/map_01/",
+    "main_code_file": {
+        "retrieve_folder": "src/",
+        "file_name": "main.py",
+        "save_folder": "maps/map_01/src",
+        "permanent": true
+    },
+    "rep_image": {
+        "retrieve_folder": "assets/",
+        "file_name": "main.png",
+        "save_folder": "maps/map_01/assets",
+        "permanent": true
+    },
+    "settings_file": {
+        "file_name": "settings.json",
+        "save_folder": "maps/map_01",
+        "permanent": true
+    },
+    "asset_configuration_file": {
+        "file_name": "configuration.json",
+        "permanent": false
+    },
+    "assets": {
+        "retrieve_folder": "assets/",
+        "file_name": [],
+        "save_folder": "maps/map_01/assets",
+        "permanent": true
+    },
+    "files": {
+        "retrieve_folder": "others/",
+        "file_name": [],
+        "save_folder": "maps/map_01/others",
+        "permanent": true
+    },
+    "assets_folder": "assets",
+    "entities_files_folder": "entities",
+    "resources_files_folder": "resources",
+    "code_files_folder": "src"
+}

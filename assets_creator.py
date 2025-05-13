@@ -209,10 +209,7 @@ def create_asset(structure):
             if i.get("margin"):
                 if reqs[0][1] < i.get("margin")[1]:
                     reqs[0][1] = i.get("margin")[1]
-                if (
-                    height + reqs[0][1]
-                    > gtemp.get("dimensions")[1] - i.get("margin")[3]
-                ):
+                if height + reqs[0][1] > gtemp[1] - i.get("margin")[3]:
                     reqs[0][1] = gtemp[1] - i.get("margin")[3]
                 if reqs[0][0] < i.get("margin")[0]:
                     reqs[0][0] = i.get("margin")[0]
@@ -222,6 +219,7 @@ def create_asset(structure):
             # This one just self distances based on the setting as in
             # "self_distance" if something is overlaping other entity
             te = details.get("main")
+            gg = 0
             if (len(others) - 1) != others.index(i) and te.get(
                 "self_distance"
             ) is not None:
