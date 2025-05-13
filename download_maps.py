@@ -1,49 +1,111 @@
-import shutil
-import os
-from download_files import download
 import json
-from exceptions import GameFunctioningException
+import os
+
 from asset_builder import build
+from download_files import download
+from exceptions import GameFunctioningException
+
 
 def download_map(map_name):
-    temp = os.environ.get('TEMPORARY_STORAGE_LOCATION')
-    permanent = os.environ.get('PERMANENT_STORAGE_LOCATION')
-    
-    map_root = os.environ.get('DRIVE_MAP_ROOT_LINK')
-    if not map_root:
-        raise GameFunctioningException("Root link for map retrieval from google drive missing !")
-    
-    download(map_root + map_name,temp)
+    # Handles everything from downloading
+    # all files of a map in temp folder of flet,
+    # saving permanent files and building the assets
+    temp = os.environ.get("TEMPORARY_STORAGE_LOCATION")
+    permanent = os.environ.get("PERMANENT_STORAGE_LOCATION")
 
-    with open(f"{temp}/{map_name}/{map_name}.json") as file:
+    map_root = os.environ.get("DRIVE_MAP_ROOT_LINK")
+    if not map_root:
+        raise GameFunctioningException(
+            """
+            Root link for map retrieval from Google Drive missing!
+        """
+        )
+
+    try:
+        # Downloads the whole folder of the map in temp folder
+        download(map_root + map_name, temp)
+    except Exception:
+        raise GameFunctioningException(
+            f"""
+            Root download for map {map_name} failed
+        """
+        )
+
+    map_json_path = os.path.join(temp, map_name, f"{map_name}.json")
+    with open(map_json_path) as file:
         data = json.load(file)
 
-    for i in data:
-        if type(data.get(i))==dict:
-            if data.get(i).get('permanent'):
-                if type(data.get(i).get('file_name'))==list:
-                    if data.get(i).get('save_folder'):
-                        save_folder = data.get(i).get('save_folder')
-                    else:
-                        save_folder = "."
-                    for g in data.get(i).get('file_name'):
-                        download('Bankory/' + data.get('root') + data.get(i).get('retrieve_folder') + g,permanent + save_folder)
-                elif type(data.get(i).get('file_name'))==str:
-                    download('Bankory/' + data.get('root') + data.get(i).get('retrieve_folder') + data.get(i).get('file_name'),permanent + save_folder)
+    for key, value in data.items():
+        if isinstance(value, dict):
+            if value.get("permanent"):
+                save_folder = value.get("save_folder", ".")
+                file_name = value.get("file_name")
+
+                if isinstance(file_name, list):
+                    for g in file_name:
+                        try:
+                            download(
+                                (
+                                    "Bankory/"
+                                    + data.get("root", "")
+                                    + value.get("retrieve_folder", "")
+                                    + g
+                                ),
+                                os.path.join(permanent, save_folder),
+                            )
+                        except Exception:
+                            raise GameFunctioningException(
+                                f"""
+                                Root download for map
+                                {map_name}'s file {g} failed
+                            """
+                            )
+                elif isinstance(file_name, str):
+                    try:
+                        download(
+                            (
+                                "Bankory/"
+                                + data.get("root", "")
+                                + value.get("retrieve_folder", "")
+                                + file_name
+                            ),
+                            os.path.join(permanent, save_folder),
+                        )
+                    except Exception:
+                        raise GameFunctioningException(
+                            f"""
+                            Root download for map
+                            {map_name}'s file {file_name} failed
+                        """
+                        )
                 else:
-                    raise GameFunctioningException(f"Unintended file configuration found in temp/{map_name}/{map_name}.json")
-        elif type(data.get(i))==str:
-            os.environ[i] = data.get(i)
+                    raise GameFunctioningException(
+                        f"""
+                        Unintended file configuration found in {map_json_path}
+                    """
+                    )
+        elif isinstance(value, str):
+            os.environ[key] = value
         else:
-            raise GameFunctioningException(f"Unintended file configuration found in temp/{map_name}/{map_name}.json")
-        
-    assets = data.get('asset_configuration_file').get('file_name')
-    if type(assets)==list:
+            raise GameFunctioningException(
+                f"""
+                Unintended file configuration found in {map_json_path}
+            """
+            )
+
+    # Build assets
+    assets = data.get("asset_configuration_file", {}).get("file_name")
+    if isinstance(assets, list):
         for i in assets:
-            build(i,map_name)
-    elif type(assets)==str:
-        build(assets,map_name)
+            build(i, map_name)
+    elif isinstance(assets, str):
+        build(assets, map_name)
     else:
-        raise GameFunctioningException(f"Unintended file configuration found in temp/{map_name}/{map_name}.json")
+        raise GameFunctioningException(
+            f"""
+            Unintended file configuration found in {map_json_path}
+        """
+        )
+
 
 download_map("map_01")

@@ -1,37 +1,51 @@
-from exceptions import * # Contains all the custom exceptions coded !
 import os
 import types
 
+# Contains all the custom exceptions coded !
+from exceptions import GameFunctioningException, OwnershipException
+
+# Here I have not written checks for environment variables
+# (except 'current_game') cause it can increase
+# the loading time, slightly but still dude !
+
+
 class Player:
     num_players = 0
-    def __init__(self,name=None,owned_cards=None,cash=None):
+
+    def __init__(self, name=None, owned_cards=None, cash=None):
         """
-            Initializes a player
+        Initializes a player
         """
         self.player_num = Player.num_players
-        Player.num_players +=1 # For getting the default name like "Player 1"
+        Player.num_players += 1  # For getting the default name like "Player 1"
 
-        #Checks
-        if not os.environ.get('current_game'):
-            raise GameFunctioningException("'current_game' environment variable not set !")
-        if not os.environ.get('current_game').get('num_players'):
-            raise GameFunctioningException("'num_players' var not found in 'current_game' environment variable !")
-        
-        if Player.num_players == os.environ.get('current_game').num_players:
-            raise GameFunctioningException("Tried to assign more players than allowed in current game rules.")
-        
+        # Environment Variable Checks
+        if not os.environ.get("current_game"):
+            raise GameFunctioningException(
+                "'current_game' environment variable not set !"
+            )
+        cg = os.environ.get("current_game")
+        if Player.num_players == cg.get("num_players"):
+            raise GameFunctioningException(
+                """Tried to assign more players
+                than allowed in current game rules."""
+            )
 
         self.name = f"Player {self.player_num}"
         if name:
             self.name = name.title()
-        self.owned_cards = owned_cards  # List of cards owned by the player (Contains objects directly)
-        self.cash = Cash(cash) # A Cash object for each player's money
+        self.owned_cards = (
+            owned_cards
+            # List of cards owned by the player (Contains objects directly)
+        )
+        self.cash = Cash(cash)  # A Cash object for each player's money
         self.position = 0
-    
-    def move(self,pos):
+
+    def move(self, pos):
         # Move player
         self.position += pos
-        # No hight limit cause it will be considered in graphics relative to starting position on board
+        # No hight limit cause it will be considered
+        # in graphics relative to starting position on board
 
     def reset(self):
         # Reset everything including owned cards, cash and position
@@ -42,21 +56,21 @@ class Player:
         self.cash.reset()
         self.position = 0
 
-    
+
 class Cash:
-    def __init__(self,amount=None):
+    def __init__(self, amount=None):
         """
-            Cash owned by an entity (Bank, player or others)
+        Cash owned by an entity (Bank, player or others)
         """
         self.amount = 0
         if amount:
             self.amount = amount
-    
-    def add(self,amount):
+
+    def add(self, amount):
         # Add cash to entity's wallet
         self.amount += amount
 
-    def remove(self,amount):
+    def remove(self, amount):
         # Remove cash from entity's wallet
         self.amount -= amount
 
@@ -64,66 +78,135 @@ class Cash:
         # Reset cash to 0
         self.amount = 0
 
+
 # Functions for different implementation of Cards !
 
-def set_owner(self,player):
-    if self.owner is not None:
-        raise OwnershipException(self.name,self.owner.name)
+
+def set_owner(self, player):
+    # Sets the player as the owner if it's not already set
+    if self.owner:
+        raise OwnershipException(self.name, self.owner.name)
+    # Adds the card to the player's owned cards
     player.owned_cards.append(self)
     self.owner = player
 
-def transfer_ownership(self,player):
+
+def to(self, player):
+    # Transfers the ownership from prev player to new one
     self.reset()
     self.set_owner(player)
 
+
 def add_house(self):
+    # Adds the houses
     if self.num_houses == 5:
         return
     self.num_houses += 1
 
+
 def run_actions(self):
-    for i in self.data.get('actions'):
+    # Executes the actions defined for the card
+    for i in self.data.get("actions"):
         exec(i)
 
+
 class Card:
-    def __init__(self,name,type):
+    def __init__(self, name, type):
+        """
+        Represents cards on the board
+        """
         self.name = name
-        types_in_map = os.environ.get('current_game').card_types
-        if type<0:
-            self.type = types_in_map[0]
-        elif type >= len(types_in_map):
-            self.type = types_in_map[-1]
+
+        # Environment Variable Checks
+        if not os.environ.get("current_game"):
+            raise GameFunctioningException(
+                "'current_game' environment variable not set !"
+            )
+
+        cg = os.environ.get("current_game")
+
+        # List of all types of cards below in 'list_card_types'
+
+        self.types_in_map = cg.get("list_card_types")
+        self.rules = cg.get("card_types_data").get(
+            self.type
+        )  # Dictionary containing information of the card type
+        self.details = cg.get("cards").get(
+            name
+        )  # Dictionary containing information of the card
+
+        # Sets the type name based on value provided.
+        if type < 0:
+            self.type = self.types_in_map[0]
+        elif type >= len(self.types_in_map):
+            self.type = self.types_in_map[-1]
         else:
-            self.type = types_in_map[type]
-        self.rules = os.environ.get('current_game').card_types_file.get(self.type)
-        self.details = os.environ.get('current_game').cards.get(name)
-        if (self.rules.get('ownable')):
+            self.type = self.types_in_map[type]
+
+        # Rules based on the types information checked
+        # for different functions alloted as before
+        if self.rules.get("ownable"):
             self.owner = None
-            self.set_owner = types.MethodType(set_owner,self)
-            self.transfer_ownership = types.MethodType(transfer_ownership,self)
-        if (self.rules.get('house')):
+            self.set_owner = types.MethodType(set_owner, self)
+            self.transfer_ownership = types.MethodType(to, self)
+        if self.rules.get("house"):
             self.num_houses = 0
-            self.add_house = types.MethodType(add_house,self)
-        if (self.rules.get('actions')):
-            self.run_actions = types.MethodType(run_actions,self)
-    
+            self.add_house = types.MethodType(add_house, self)
+        if self.rules.get("actions"):
+            self.run_actions = types.MethodType(run_actions, self)
+
     def reset(self):
-        if (self.rules.get('ownable')):
+        """
+        Resets the owner,number of houses, and
+        removes the card from player's owned cards list
+        """
+        if self.rules.get("ownable"):
             self.owner.owned_cards.remove(self)
             self.owner = None
-        if (self.rules.get('house')):
+        if self.rules.get("house"):
             self.num_houses = 0
-        self.details = os.environ.get('current_game').cards.get(self.name)
+        current_game = os.environ.get("current_game")
+        self.types_in_map = current_game.get("list_card_types")
+        # The card type's list
+        self.rules = current_game.get("card_types_data").get(
+            self.type
+        )  # Re-fetches the details of the card type
+        self.details = current_game.get("cards").get(
+            self.name
+        )  # Re-fetches the details of the card
+
 
 class Board:
     def __init__(self):
-        self.array_of_cards = os.environ.get('current_game').board_cards_array
-        self.left,self.top,self.right,self.bottom = os.environ.get('current_game').board_details.get('card_numbers')
-        self.num_cards = os.environ.get('current_game').total_cards
-        self.num_board_cards = len(self.array_of_cards)
-        self.num_special_cards = os.environ.get('current_game').board_details.get('total_special_cards')
-        self.num_types_board_cards = os.environ.get('current_game').board_details.get('total_board_cards_types')
-        self.num_types_special_cards = os.environ.get('current_game').board_details.get('total_special_cards_types')
 
-        self.player_start_position = os.environ.get('current_game').board_details.get('player_start_position')
-        self.player_step_length = os.environ.get('current_game').board_details.get('player_step_length')
+        if not os.environ.get("current_game"):
+            raise GameFunctioningException(
+                "'current_game' environment variable not set !"
+            )
+
+        self.board_details = os.environ.get("current_game").get(
+            "board_details"
+        )  # All board details in the form of string of a dictionary
+
+        self.array_of_cards = self.board_details.get(
+            "board_cards_array"
+        )  # Stores the array of cards on the board
+        self.left, self.top, self.right, self.bottom = self.board_details.get(
+            "card_numbers"
+        )  # Total number of cards on left, top, right, and bottom
+        self.num_board_cards = len(
+            self.array_of_cards
+        )  # Total number of cards on board
+
+        self.per_card_height = self.board_details.get(
+            "per_card_height"
+        )  # Width could be altering, that's why !
+
+        self.board_dimensions = self.board_details.get("board_dimensions")
+
+        self.player_start_position = self.board_details.get(
+            "player_start_position"
+        )  # Coordinates of starting position
+        self.player_step_length = self.board_details.get(
+            "player_step_length"
+        )  # Step Length
