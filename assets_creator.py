@@ -156,9 +156,13 @@ def create_asset(structure):
             details.get("main").get("color"),
         )
     else:  # Means Image
-        img = Image.new(
-            "RGBA", details.get("main").get("dimensions"), (255, 255, 255, 1)
-        )
+        tempk = os.environ.get("FLET_APP_STORAGE_TEMP")
+        permk = os.environ.get("FLET_APP_STORAGE_DATA")
+        locofimage = details.get("main").get("location")
+        if (details.get("main").get("search_location")) == "temporary":
+            img = Image.open(tempk + "/" + locofimage)
+        elif (details.get("main").get("search_location")) == "permanent":
+            img = Image.open(permk + "/maps/" + locofimage)
 
     drawimg = ImageDraw.Draw(img)
     border_color = details.get("main").get("border_color")
@@ -285,7 +289,12 @@ def create_asset(structure):
             text_img_drawn.bitmap(*reqs)
         elif i.get("type") == "image":
             temploc = os.environ.get("FLET_APP_STORAGE_TEMP")
-            small_img = Image.open(temploc + "/" + i.get("location"))
+            permloc = os.environ.get("FLET_APP_STORAGE_DATA")
+
+            if i.get("search_location") == "temporary":
+                small_img = Image.open(temploc + "/" + i.get("location"))
+            elif i.get("search_location") == "permanent":
+                small_img = Image.open(permloc + "/maps/" + i.get("location"))
 
             # New image altering
             if i.get("rotate"):

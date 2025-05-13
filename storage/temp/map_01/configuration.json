@@ -1,5 +1,10 @@
 {
     "cards": {
+        "types": ["PROPERTY","STATION","WATER WORKS","ELECTRIC COMPANY","FREE PARKING","CHANCE","COMMUNITY CHEST","JAIL VISIT","GO TO JAIL","INCOME TAX","START"],
+        "entity_file": "entities/card_types.py",
+        "res_file": "resources/cards.py"
+    },
+    "board": {
         "types": ["BOARD"],
         "entity_file": "entities/board.py",
         "num": 1

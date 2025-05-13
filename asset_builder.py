@@ -56,8 +56,9 @@ def build(file_name, map_name):
 
     data_2 = {}
     data_3 = {}
-
     for key, value in data.items():
+        data_2 = {}
+        data_3 = {}
         # Loops through the configuration dictionary
         # content for building each
         # Json can be loaded using json.load but python
@@ -85,7 +86,6 @@ def build(file_name, map_name):
                 is empty !"""
                 )
         elif ".py" in entity_file:
-
             fp = temp + "/" + map_name + "/" + entity_file
             ef = entity_file[:-2]
             spec = importlib.util.spec_from_file_location(ef, fp)
@@ -146,7 +146,7 @@ def build(file_name, map_name):
                 data_3 = module2.data
 
         # This is for building all cards in the resource file
-        if data_3:
+        if data_3 != {}:
             for card, card_value in data_3.items():
                 if card_value.get("type") in value.get("types"):
                     structure = copy.deepcopy(
@@ -180,6 +180,21 @@ def build(file_name, map_name):
             for k in value.get("types"):
                 for j in range(value.get("num")):
                     try:
+                        g = data_2.get(k).get("structure")
+                        structure = copy.deepcopy(g)
+                        if not structure:
+                            raise GameFunctioningException(
+                                f"""Structure details
+                            empty for type {k}
+                            in file temp/
+                            {map_name}/{value.get('entity_file')}
+                            """
+                            )
+                        a_temp_struc = structure["others"]
+                        for i in structure.get("others"):
+                            a_temp = a_temp_struc[a_temp_struc.index(i)]
+                            if type(i.get("reqs")) == str:
+                                a_temp["reqs"] = eval(i.get("reqs"))
                         folder = f"{permanent}/{data_2.get(k).get("assets")}"
                         os.makedirs(folder, exist_ok=True)
                         a = data_2.get(k).get("assets")

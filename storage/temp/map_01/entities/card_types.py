@@ -81,6 +81,7 @@ data = {
                 },
                 {
                     "type": "image",
+                    "search_location": "temporary",
                     "location": "map_01/assets/rail.png",
                     "position": (3, 150),
                     "scale": ((255, 164), Image.Resampling.LANCZOS)
@@ -126,6 +127,7 @@ data = {
                 },
                 {
                     "type": "image",
+                    "search_location": "temporary",
                     "location": "map_01/assets/water_tap.png",
                     "position": ('center', 130),
                     "scale": ((255, 164), Image.Resampling.LANCZOS)
@@ -171,6 +173,7 @@ data = {
                 },
                 {
                     "type": "image",
+                    "search_location": "temporary",
                     "location": "map_01/assets/bulb.png",
                     "position": ('center', 150),
                     "scale": ((139, 157), Image.Resampling.LANCZOS)
@@ -195,7 +198,7 @@ data = {
         "mortgage": False,
         "board": True,
         "actions": True,
-        "assets": "maps/map_01/assets/cards/bus_stop_card",
+        "assets": "maps/map_01/assets/cards/free_parking_card",
         "structure": {
             "main": {
                 "type": "color",
@@ -207,6 +210,7 @@ data = {
             "others": [
                 {
                     "type": "image",
+                    "search_location": "temporary",
                     "location": "map_01/assets/bus.png",
                     "position": ('center', 'center'),
                     "scale": ((314, 292), Image.Resampling.LANCZOS),
@@ -261,6 +265,7 @@ data = {
                 },
                 {
                     "type": "image",
+                    "search_location": "temporary",
                     "location": "map_01/assets/question_mark.png",
                     "position": ('center', 150),
                     "scale": ((125, 165), Image.Resampling.LANCZOS)
@@ -296,6 +301,7 @@ data = {
                 },
                 {
                     "type": "image",
+                    "search_location": "temporary",
                     "location": "map_01/assets/chest.png",
                     "position": ('center', 180),
                     "scale": ((154, 135), Image.Resampling.LANCZOS)
@@ -322,6 +328,7 @@ data = {
             "others": [
                 {
                     "type": "image",
+                    "search_location": "temporary",
                     "location": "map_01/assets/man_in_jail.png",
                     "position": ('center', 'center'),
                     "scale": ((314, 292), Image.Resampling.LANCZOS),
@@ -367,6 +374,7 @@ data = {
             "others": [
                 {
                     "type": "image",
+                    "search_location": "temporary",
                     "location": "map_01/assets/police.png",
                     "position": ('center', 'center'),
                     "scale": ((314, 292), Image.Resampling.LANCZOS),
@@ -421,9 +429,54 @@ data = {
                 },
                 {
                     "type": "image",
+                    "search_location": "temporary",
                     "location": "map_01/assets/money_bag.png",
                     "position": ('center', 143),
                     "scale": ((175, 200), Image.Resampling.LANCZOS)
+                }
+            ]
+        }
+    },
+    "START": {
+        "ownable": False,
+        "rentable": False,
+        "house": False,
+        "mortgage": False,
+        "board": True,
+        "actions": True,
+        "assets": "maps/map_01/assets/cards/start_card",
+        "structure": {
+            "main": {
+                "type": "color",
+                "color": (230, 220, 200),
+                "dimensions": (400, 400),
+                "border_width": 4,
+                "border_color": (90, 60, 40),
+                "self_distance": True,
+            },
+            "others": [
+                {
+                    "type": "text",
+                    "reqs": """[['center', 50], "GO" , (90, 60, 40),
+                            ImageFont.truetype('DejaVuSans-Bold.ttf', 45)]""",
+                    "spacing": 60,
+                    "margin": (10, 10, 10, 10),
+                    "shorten": True
+                },
+                {
+                    "type": "text",
+                    "reqs": """[['center', 50], "COLLECT $200 AS YOU PASS" , (90, 60, 40),
+                            ImageFont.truetype('DejaVuSans-Bold.ttf', 45)]""",
+                    "spacing": 50,
+                    "margin": (10, 10, 10, 10),
+                    "shorten": True
+                },
+                {
+                    "type": "image",
+                    "search_location": "temporary",
+                    "location": "map_01/assets/arrow_left.png",
+                    "position": ('center', 260),
+                    "scale": ((285,136), Image.Resampling.LANCZOS)
                 }
             ]
         }
