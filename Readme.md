@@ -5,6 +5,9 @@ Hi ! This is [@YogyaChugh](https://github.com/YogyaChugh)!
 I have made this game for educational purposes only and it's inspired from Monopoly ! License attached in Repo
 
 
+![landing_page](https://github.com/user-attachments/assets/4936e8ab-5422-4918-a1af-39bd0bb4c96b)
+
+
 FOR CODERS
 =
 
